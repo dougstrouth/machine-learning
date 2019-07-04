@@ -181,7 +181,7 @@ print("Model has a coefficient of determination, R^2, of {:.3f}.".format(score))
 from sklearn.model_selection import train_test_split
 
 # TODO: Shuffle and split the data into training and testing subsets
-X_train, X_test, y_train, y_test = (None, None, None, None)
+X_train, X_test, y_train, y_test = train_test_split(features, prices, test_size = .2, random_state =5 )
 
 # Success
 print("Training and testing split was successful.")
@@ -194,6 +194,9 @@ print("Training and testing split was successful.")
 # **Hint:** Think about how overfitting or underfitting is contingent upon how splits on data is done.
 #%% [markdown]
 # **Answer: **
+# You cannot validate that the model is properly trained if you don't have something to compare and test it against
+# By not testing it and relying on it we could draw ridiculous erroneous conclusions.
+
 #%% [markdown]
 # ----
 # 
@@ -219,6 +222,10 @@ vs.ModelLearning(features, prices)
 # Think about the pros and cons of adding more training points based on if the training and testing curves are converging.
 #%% [markdown]
 # **Answer: **
+# Graph 1 max depth = 1
+# The more training points added the lower the score, conversely, the more testing points the higher the score.
+# Adding more training points will not increase the score anymore as the two curves have converged with a score of just under .5
+
 #%% [markdown]
 # ### Complexity Curves
 # The following code cell produces a graph for a decision tree model that has been trained and validated on the training data using different maximum depths. The graph produces two complexity curves — one for training and one for validation. Similar to the **learning curves**, the shaded regions of both the complexity curves denote the uncertainty in those curves, and the model is scored on both the training and validation sets using the `performance_metric` function.  
@@ -236,6 +243,13 @@ vs.ModelComplexity(X_train, y_train)
 # **Hint:** High bias is a sign of underfitting(model is not complex enough to pick up the nuances in the data) and high variance is a sign of overfitting(model is by-hearting the data and cannot generalize well). Think about which model(depth 1 or 10) aligns with which part of the tradeoff.
 #%% [markdown]
 # **Answer: **
+# At max depth = 1 the model suffers from high bias, the model requires more training at this point since the training score is still low at just over .4.
+# At max depth = 10 the model suffers from high variance. We can see this as there is a wider gap between the training and validation curve than at the earlier max depths, indicating variance.
+# This variance indicates that the model has been overtrained and is really only applicable to the training data, and may be overly tuned to this data and not general enough to use on additional real world data.
+
+
+
+
 #%% [markdown]
 # ### Question 6 - Best-Guess Optimal Model
 # * Which maximum depth do you think results in a model that best generalizes to unseen data? 
@@ -244,6 +258,9 @@ vs.ModelComplexity(X_train, y_train)
 # ** Hint: ** Look at the graph above Question 5 and see where the validation scores lie for the various depths that have been assigned to the model. Does it get better with increased depth? At what point do we get our best validation score without overcomplicating our model? And remember, Occams Razor states "Among competing hypotheses, the one with the fewest assumptions should be selected."
 #%% [markdown]
 # **Answer: **
+
+# I would choose a max depth of 4. This is because it has a higher score of around .8 and this is the first point where the variance gap begins to broaden, indicating that the model is starting to become too specific past this point.
+
 #%% [markdown]
 # -----
 # 
@@ -257,6 +274,9 @@ vs.ModelComplexity(X_train, y_train)
 # ** Hint: ** When explaining the Grid Search technique, be sure to touch upon why it is used,  what the 'grid' entails and what the end goal of this method is. To solidify your answer, you can also give an example of a parameter in a model that can be optimized using this approach.
 #%% [markdown]
 # **Answer: **
+# The grid-search technique is a bruteforce technique to adjust parameters of a machine learning algorithm. Adjusting multiple parameters creates a grid of possible values the parameters across different ranges.
+# All the possible combinations of values for the parameters are tested and scored, creating a grid of scores, in our case R^2 scores.
+
 #%% [markdown]
 # ### Question 8 - Cross-Validation
 # 
@@ -269,6 +289,9 @@ vs.ModelComplexity(X_train, y_train)
 # When thinking about how k-fold cross validation helps grid search, think about the main drawbacks of grid search which are hinged upon **using a particular subset of data for training or testing** and how k-fold cv could help alleviate that. You can refer to the [docs](http://scikit-learn.org/stable/modules/cross_validation.html#cross-validation) for your answer.
 #%% [markdown]
 # **Answer: **
+# K-fold techniques eliminate the delineation between training and testing data sets. The model is run multiple times, each time changing the data associated with training or testing the model. The number of times the model will be run corresponds to the value of k.
+# Once the model has been run k times, the average values are calculated yielding what is hopefully a more effective and adaptive model. This is great because it works well with smaller data sets and squeezes as much utility as possible from our data by iterating through it.
+
 #%% [markdown]
 # ### Implementation: Fitting a Model
 # Your final implementation requires that you bring everything together and train a model using the **decision tree algorithm**. To ensure that you are producing an optimized model, you will train the model using the grid search technique to optimize the `'max_depth'` parameter for the decision tree. The `'max_depth'` parameter can be thought of as how many questions the decision tree algorithm is allowed to ask about the data before making a prediction. Decision trees are part of a class of algorithms called *supervised learning algorithms*.
@@ -288,6 +311,10 @@ vs.ModelComplexity(X_train, y_train)
 
 #%%
 # TODO: Import 'make_scorer', 'DecisionTreeRegressor', and 'GridSearchCV'
+from sklearn.metrics import make_scorer
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.model_selection import GridSearchCV
+
 
 def fit_model(X, y):
     """ Performs grid search over the 'max_depth' parameter for a 
@@ -297,18 +324,18 @@ def fit_model(X, y):
     cv_sets = ShuffleSplit(n_splits = 10, test_size = 0.20, random_state = 0)
 
     # TODO: Create a decision tree regressor object
-    regressor = None
+    regressor = DecisionTreeRegressor()
 
     # TODO: Create a dictionary for the parameter 'max_depth' with a range from 1 to 10
-    params = {}
+    params = {'max_depth': range(1,11)}
 
     # TODO: Transform 'performance_metric' into a scoring function using 'make_scorer' 
-    scoring_fnc = None
+    scoring_fnc = make_scorer(performance_metric)
 
     # TODO: Create the grid search cv object --> GridSearchCV()
     # Make sure to include the right parameters in the object:
     # (estimator, param_grid, scoring, cv) which have values 'regressor', 'params', 'scoring_fnc', and 'cv_sets' respectively.
-    grid = None
+    grid = GridSearchCV(regressor, params, scoring = scoring_fnc, cv = cv_sets)
 
     # Fit the grid search object to the data to compute the optimal model
     grid = grid.fit(X, y)
@@ -337,6 +364,7 @@ print("Parameter 'max_depth' is {} for the optimal model.".format(reg.get_params
 # ** Hint: ** The answer comes from the output of the code snipped above.
 # 
 # **Answer: **
+# We can see that my intuition regarding a max depth of 4 was correct. Our function agreed with the earlier assessment 
 #%% [markdown]
 # ### Question 10 - Predicting Selling Prices
 # Imagine that you were a real estate agent in the Boston area looking to use this model to help price homes owned by your clients that they wish to sell. You have collected the following information from three of your clients:
@@ -366,6 +394,21 @@ for i, price in enumerate(reg.predict(client_data)):
 
 #%% [markdown]
 # **Answer: **
+
+# Remember our earlier data:
+# Minimum price: $105000.0
+# Maximum price: $1024800.0
+# Mean price: $454342.9447852761
+# Median price $438900.0
+# Standard deviation of prices: $165340.27765266786
+
+
+# Client 1 has a reasonable price as it lies between the other two values and has characteristics between them as well. It is also fairly close to the mean score
+# Client 2 has a high poverty level, a bad teacher to student ratio so a value closer to the minimum is expected. This is slightly offset by the number of bedrooms as 4 is still a decent sized home.
+# Client 3 has positive characteristics in terms of poverty and education, and a huge house with 8 bedrooms. Therefore a price closer to the maximum is also reasonable.
+
+
+
 #%% [markdown]
 # ### Sensitivity
 # An optimal model is not necessarily a robust model. Sometimes, a model is either too complex or too simple to sufficiently generalize to new data. Sometimes, a model could use a learning algorithm that is not appropriate for the structure of the data given. Other times, the data itself could be too noisy or contain too few samples to allow a model to adequately capture the target variable — i.e., the model is underfitted. 
@@ -388,6 +431,12 @@ vs.PredictTrials(features, prices, fit_model, client_data)
 # - Is it fair to judge the price of an individual home based on the characteristics of the entire neighborhood?
 #%% [markdown]
 # **Answer: **
+# The model uses timeless characteristics that are always important to homebuyers, however proximity to landmarks, travel, and shopping may also impact price and urban development in the past 40 years could have drastically shifted in the neighborhoods where data was gathered, especially if new schools were built or zoning laws changed. Obviously, we should collect new data if we can. Inflation would also likely have shifted our range of values higher, so our estimate of 900K for an 8 bedroom may seem laughable in today's market.
+# More features means more granularity and more precise pricing and captures more of the considerations homebuyers take into account when shopping. Adding additional features definitely would not hurt. More data to draw from is typically a good thing as long as it is relevant and accurate.
+# Our model could definitely be more robust since our range of prices shown in our trials is still a large chunk of change and could considerably renovate or upgrade a home if shoppers took it into account.
+# Characteristics of the data used to create the model should be representative or similar to the data we hope to apply our model to, so no. That would not be helpful.
+# It can't hurt, but like anything else we should not place complete reliance on our model but assess qualitative factors like home style or personal affinity for the area when choosing a house.
+
 #%% [markdown]
 # > **Note**: Once you have completed all of the code implementations and successfully answered each question above, you may finalize your work by exporting the iPython Notebook as an HTML document. You can do this by using the menu above and navigating to  
 # **File -> Download as -> HTML (.html)**. Include the finished document along with this notebook as your submission.
