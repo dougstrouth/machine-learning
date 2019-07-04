@@ -58,16 +58,16 @@ display(data.head(n=1))
 
 #%%
 # TODO: Total number of records
-n_records = None
+n_records = data.shape[0]
 
 # TODO: Number of records where individual's income is more than $50,000
-n_greater_50k = None
+n_greater_50k = data[data["income"] == ">50K"].shape[0]
 
 # TODO: Number of records where individual's income is at most $50,000
-n_at_most_50k = None
+n_at_most_50k = data[data["income"] == "<=50K"].shape[0]
 
 # TODO: Percentage of individuals whose income is more than $50,000
-greater_percent = None
+greater_percent = float(n_greater_50k)*100/n_records
 
 # Print the results
 print("Total number of records: {}".format(n_records))
@@ -161,10 +161,10 @@ display(features_log_minmax_transform.head(n = 5))
 
 #%%
 # TODO: One-hot encode the 'features_log_minmax_transform' data using pandas.get_dummies()
-features_final = None
+features_final = pd.get_dummies(features_log_minmax_transform)
 
 # TODO: Encode the 'income_raw' data to numerical values
-income = None
+income = income_raw.apply(lambda x: 1 if x == ">50K" else 0)
 
 # Print the number of features after one-hot encoding
 encoded = list(features_final.columns)
@@ -181,7 +181,7 @@ print("{} total features after one-hot encoding.".format(len(encoded)))
 
 #%%
 # Import train_test_split
-from sklearn.cross_validation import train_test_split
+from sklearn.model_selection import train_test_split
 
 # Split the 'features' and 'income' data into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(features_final, 
@@ -243,13 +243,21 @@ FP = income.count() - TP # Specific to the naive case
 TN = 0 # No predicted negatives in the naive case
 FN = 0 # No predicted negatives in the naive case
 '''
+TP = np.sum(income)
+FP = income.count()
+
+TN = 0
+FN = 0
+
+
+
 # TODO: Calculate accuracy, precision and recall
-accuracy = None
-recall = None
-precision = None
+accuracy = float(TP)/(TP+FP)
+recall = float(TP)/(TP+FN)
+precision = accuracy
 
 # TODO: Calculate F-score using the formula above for beta = 0.5 and correct values for precision and recall.
-fscore = None
+fscore = (1+0.5**2)*(precision*recall)/(0.5**2*precision+recall)
 
 # Print the results 
 print("Naive Predictor: [Accuracy score: {:.4f}, F-score: {:.4f}]".format(accuracy, fscore))
@@ -278,6 +286,12 @@ print("Naive Predictor: [Accuracy score: {:.4f}, F-score: {:.4f}]".format(accura
 # Structure your answer in the same format as above^, with 4 parts for each of the three models you pick. Please include references with your answer.
 #%% [markdown]
 # **Answer: **
+
+
+
+
+
+
 #%% [markdown]
 # ### Implementation - Creating a Training and Predicting Pipeline
 # To properly evaluate the performance of each model you've chosen, it's important that you create a training and predicting pipeline that allows you to quickly and effectively train models using various sizes of training data and perform predictions on the testing data. Your implementation here will be used in the following section.
