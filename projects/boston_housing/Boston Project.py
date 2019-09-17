@@ -406,13 +406,18 @@ for i, price in enumerate(reg.predict(client_data)):
 # **Answer: **
 
 # Remember our earlier data:
-# Minimum price: $105000.0
-# Maximum price: $1024800.0
-# Mean price: $454342.9447852761
-# Median price $438900.0
-# Standard deviation of prices: $165340.27765266786
 
-
+# Minimum price: \$105000.0
+#
+# Maximum price: \$1024800.0
+#
+# Mean price: \$454342.9447852761
+#
+# Median price \$438900.0
+#
+# Standard deviation of prices: \$165340.27765266786
+#
+#
 # Client 1 has a reasonable price as it lies between the other two values and has characteristics between them as well. It is also fairly close to the mean score
 # Client 2 has a high poverty level, a bad teacher to student ratio so a value closer to the minimum is expected. This is slightly offset by the number of bedrooms as 4 is still a decent sized home.
 # Client 3 has positive characteristics in terms of poverty and education, and a huge house with 8 bedrooms. Therefore a price closer to the maximum is also reasonable.
