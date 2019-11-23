@@ -1,6 +1,8 @@
 #%% Change working directory from the workspace root to the ipynb file location. Turn this addition off with the DataScience.changeDirOnImportExport setting
 # ms-python.python added
 import os
+os.chdir('C:\\Users\\user\\Documents\\Code\\machine-learning-1\\projects\\boston_housing')
+
 try:
 	os.chdir(os.path.join(os.getcwd(), 'machine-learning/projects/boston_housing'))
 	print(os.getcwd())
@@ -165,6 +167,14 @@ print("Model has a coefficient of determination, R^2, of {:.3f}.".format(score))
 # * R2 score of 0.40 means that 40 percent of the variance in Y is predictable from X.
 #%% [markdown]
 # **Answer:**
+
+
+# The model has an R2 score of 0.923 indicating that the dependent variable can be predicted from the independent variable. 
+# Since the closer the R2 is to 1 the more reliable the model is, this models is about 92% accurate. 
+# I would consider it successful.
+
+
+
 #%% [markdown]
 # ### Implementation: Shuffle and Split Data
 # Your next implementation requires that you take the Boston housing dataset and split the data into training and testing subsets. Typically, the data is also shuffled into a random order when creating the training and testing subsets to remove any bias in the ordering of the dataset.
@@ -396,13 +406,18 @@ for i, price in enumerate(reg.predict(client_data)):
 # **Answer: **
 
 # Remember our earlier data:
-# Minimum price: $105000.0
-# Maximum price: $1024800.0
-# Mean price: $454342.9447852761
-# Median price $438900.0
-# Standard deviation of prices: $165340.27765266786
 
-
+# Minimum price: \$105000.0
+#
+# Maximum price: \$1024800.0
+#
+# Mean price: \$454342.9447852761
+#
+# Median price \$438900.0
+#
+# Standard deviation of prices: \$165340.27765266786
+#
+#
 # Client 1 has a reasonable price as it lies between the other two values and has characteristics between them as well. It is also fairly close to the mean score
 # Client 2 has a high poverty level, a bad teacher to student ratio so a value closer to the minimum is expected. This is slightly offset by the number of bedrooms as 4 is still a decent sized home.
 # Client 3 has positive characteristics in terms of poverty and education, and a huge house with 8 bedrooms. Therefore a price closer to the maximum is also reasonable.

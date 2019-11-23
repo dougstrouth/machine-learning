@@ -307,8 +307,6 @@ print("Naive Predictor: [Accuracy score: {:.4f}, F-score: {:.4f}]".format(accura
 #%%
 # TODO: Import two metrics from sklearn - fbeta_score and accuracy_score
 from sklearn.metrics import fbeta_score, accuracy_score
-
-
 def train_predict(learner, sample_size, X_train, y_train, X_test, y_test): 
     '''
     inputs:
@@ -352,7 +350,7 @@ def train_predict(learner, sample_size, X_train, y_train, X_test, y_test):
     # TODO: Compute F-score on the test set which is y_test
     results['f_test'] = fbeta_score(y_test,predictions_test,beta=0.5)
        
-    # Success
+    # Success    
     print("{} trained on {} samples.".format(learner.__class__.__name__, sample_size))
         
     # Return the results
@@ -372,23 +370,20 @@ def train_predict(learner, sample_size, X_train, y_train, X_test, y_test):
 
 #%%
 # TODO: Import the three supervised learning models from sklearn
+from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.linear_model import LogisticRegression
 # TODO: Initialize the three models
-
-clf_A = GradientBoostingClassifier(random_state=42)
-clf_B = RandomForestClassifier(random_state=42)
-clf_C = LogisticRegression(random_state=42)
-
-
+clf_A = SVC(random_state=10)
+clf_B = RandomForestClassifier(random_state=10)
+clf_C = GradientBoostingClassifier(random_state=10)
 
 # TODO: Calculate the number of samples for 1%, 10%, and 100% of the training data
 # HINT: samples_100 is the entire training set i.e. len(y_train)
 # HINT: samples_10 is 10% of samples_100 (ensure to set the count of the values to be `int` and not `float`)
 # HINT: samples_1 is 1% of samples_100 (ensure to set the count of the values to be `int` and not `float`)
 samples_100 = len(y_train)
-samples_10 =int(len(y_train)*10/100)
+samples_10 = int(len(y_train)/10)
 samples_1 = int(len(y_train)/100)
 
 # Collect results on the learners
@@ -397,7 +392,8 @@ for clf in [clf_A, clf_B, clf_C]:
     clf_name = clf.__class__.__name__
     results[clf_name] = {}
     for i, samples in enumerate([samples_1, samples_10, samples_100]):
-        results[clf_name][i] =         train_predict(clf, samples, X_train, y_train, X_test, y_test)
+        results[clf_name][i] = \
+        train_predict(clf, samples, X_train, y_train, X_test, y_test)
 
 # Run metrics visualization for the three supervised learning models chosen
 vs.evaluate(results, accuracy, fscore)
